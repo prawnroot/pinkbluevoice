@@ -77,3 +77,13 @@ Chat plus speech:
 ```
 
 Responses return WAV audio as `audio_base64`.
+
+## Container image
+
+This repo publishes a Docker image to GitHub Container Registry:
+
+```text
+ghcr.io/prawnroot/pinkbluevoice:latest
+```
+
+Use that value as the RunPod Serverless template container image after the GitHub Actions build finishes.
