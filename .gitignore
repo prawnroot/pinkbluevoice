@@ -1,0 +1,19 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+
+# Model/audio artifacts stay out of GitHub.
+*.pth
+*.ckpt
+*.onnx
+*.wav
+*.mp3
+*.m4a
+*.tar
+*.zip
+models/
+weights/
+outputs/
