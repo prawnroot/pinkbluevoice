@@ -34,6 +34,26 @@ _tts_lock = threading.RLock()
 _tts_engine = None
 
 
+def _file_info(path: str) -> dict[str, Any]:
+    return {
+        "path": path,
+        "exists": os.path.exists(path),
+        "size_bytes": os.path.getsize(path) if os.path.exists(path) else None,
+    }
+
+
+def _debug_context() -> dict[str, Any]:
+    return {
+        "gpt_sovits_root": GPT_SOVITS_ROOT,
+        "base_config": _file_info(BASE_GPT_SOVITS_CONFIG),
+        "ref_audio": _file_info(REF_AUDIO),
+        "sovits_weights": _file_info(SOVITS_WEIGHTS_PATH),
+        "t2s_weights": _file_info(T2S_WEIGHTS_PATH),
+        "tts_engine_cached": _tts_engine is not None,
+        "api2d_key_set": bool(API2D_FORWARD_KEY),
+    }
+
+
 def _import_tts() -> tuple[Any, Any]:
     os.chdir(GPT_SOVITS_ROOT)
     for import_path in (GPT_SOVITS_ROOT, os.path.join(GPT_SOVITS_ROOT, "GPT_SoVITS")):
@@ -152,15 +172,11 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
 
     try:
         if action == "health":
-            return {
-                "ok": True,
-                "gpt_sovits_root": GPT_SOVITS_ROOT,
-                "base_config_exists": os.path.exists(BASE_GPT_SOVITS_CONFIG),
-                "ref_audio_exists": os.path.exists(REF_AUDIO),
-                "sovits_weights_exists": os.path.exists(SOVITS_WEIGHTS_PATH),
-                "t2s_weights_exists": os.path.exists(T2S_WEIGHTS_PATH),
-                "api2d_key_set": bool(API2D_FORWARD_KEY),
-            }
+            return {"ok": True, **_debug_context()}
+
+        if action == "warmup":
+            _get_tts_engine()
+            return {"ok": True, "message": "TTS engine initialized", **_debug_context()}
 
         if action == "tts":
             wav_path = _synthesize(
@@ -184,7 +200,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
 
         raise ValueError(f"unknown action: {action}")
     except Exception as exc:
-        return {"error": str(exc)}
+        return {"error": str(exc), "debug": _debug_context()}
 
 
 runpod.serverless.start({"handler": handler})
