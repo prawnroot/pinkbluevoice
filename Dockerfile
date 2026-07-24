@@ -26,6 +26,9 @@ RUN python -m pip install --upgrade pip \
 RUN wget -O /tmp/pretrained_models.zip \
         https://huggingface.co/XXXXRT/GPT-SoVITS-Pretrained/resolve/main/pretrained_models.zip \
     && unzip -q -o /tmp/pretrained_models.zip -d /workspace/GPT-SoVITS/GPT_SoVITS \
+        && wget -O /workspace/GPT-SoVITS/GPT_SoVITS/pretrained_models/s1v3.ckpt \
+        https://huggingface.co/lj1995/GPT-SoVITS/resolve/main/s1v3.ckpt \
+    && test "$(stat -c%s /workspace/GPT-SoVITS/GPT_SoVITS/pretrained_models/s1v3.ckpt)" -gt 100000000 \
     && rm -f /tmp/pretrained_models.zip
 
 WORKDIR /workspace/app
