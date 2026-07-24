@@ -15,7 +15,11 @@ RUN git clone --depth 1 https://github.com/RVC-Boss/GPT-SoVITS.git /workspace/GP
 
 WORKDIR /workspace/GPT-SoVITS
 RUN python -m pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && sed '/^torchaudio$/d' requirements.txt > /tmp/gpt-sovits-requirements.txt \
+    && pip install --no-cache-dir -r /tmp/gpt-sovits-requirements.txt \
+    && pip install --no-cache-dir --force-reinstall --no-deps \
+        --index-url https://download.pytorch.org/whl/cu121 \
+        torchaudio==2.3.1+cu121
 
 WORKDIR /workspace/app
 COPY requirements.txt /workspace/app/requirements.txt
