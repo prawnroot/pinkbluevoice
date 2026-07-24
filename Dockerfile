@@ -8,7 +8,7 @@ ENV GPT_SOVITS_CONFIG=/workspace/GPT-SoVITS/GPT_SoVITS/configs/tts_infer.yaml
 WORKDIR /workspace
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git ffmpeg libsndfile1 build-essential \
+    && apt-get install -y --no-install-recommends git ffmpeg libsndfile1 build-essential wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 https://github.com/RVC-Boss/GPT-SoVITS.git /workspace/GPT-SoVITS
@@ -22,6 +22,11 @@ RUN python -m pip install --upgrade pip \
         torch==2.3.1+cu121 \
         torchvision==0.18.1+cu121 \
         torchaudio==2.3.1+cu121
+
+RUN wget -O /tmp/pretrained_models.zip \
+        https://huggingface.co/XXXXRT/GPT-SoVITS-Pretrained/resolve/main/pretrained_models.zip \
+    && unzip -q -o /tmp/pretrained_models.zip -d /workspace/GPT-SoVITS/GPT_SoVITS \
+    && rm -f /tmp/pretrained_models.zip
 
 WORKDIR /workspace/app
 COPY requirements.txt /workspace/app/requirements.txt
