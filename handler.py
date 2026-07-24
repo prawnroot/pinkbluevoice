@@ -35,9 +35,10 @@ _tts_engine = None
 
 
 def _import_tts() -> tuple[Any, Any]:
-    if GPT_SOVITS_ROOT not in sys.path:
-        sys.path.insert(0, GPT_SOVITS_ROOT)
     os.chdir(GPT_SOVITS_ROOT)
+    for import_path in (GPT_SOVITS_ROOT, os.path.join(GPT_SOVITS_ROOT, "GPT_SoVITS")):
+        if import_path not in sys.path:
+            sys.path.insert(0, import_path)
     from GPT_SoVITS.TTS_infer_pack.TTS import TTS, TTS_Config
 
     return TTS, TTS_Config
